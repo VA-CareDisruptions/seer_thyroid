@@ -1,14 +1,12 @@
-RunControl <- function(ds,set.vax.intro.date, set.form_cont1){
+RunControl <- function(ds,set.start.date, set.form_cont1){
   ds1 <- ds %>%
     arrange(date) %>%
     #create the variables needed for ITS and trend and seasonal adjustments
     mutate( index=row_number(),
-            vax.intro.index = which(date ==set.vax.intro.date   ),
+            vax.intro.index = which(date ==set.start.date   ),
             month=as.factor(month(date)),
-            Outcome_pre = ifelse(date <set.vax.intro.date, Outcome, NA_real_)) %>%
-    #log and scale the covariates
-    mutate(log_acm_noJ= log(acm_noJ)
-    )
+            Outcome_pre = ifelse(date <set.start.date, Outcome, NA_real_))
+    
   
   #acm_noresp_nodiar 
   mod1 <- glm.nb(set.form_cont1, data=ds1)

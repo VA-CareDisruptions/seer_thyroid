@@ -1,16 +1,16 @@
-OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_until_second_knot, set.vax.intro.date=vax.intro.date,set.months_until_second_knot=months_until_second_knot){
+OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.months_until_second_knot=0){
   
   
   model.output= fitted.mod$mod1
   mod.ds=fitted.mod$mod1$model
   form1=fitted.mod$form_its1
   ds=fitted.mod$ds
-  Y= ds$J12_J18
+  Y= ds$Outcome
   
-  vax.intro.index = which(ds$date ==set.vax.intro.date   )
-  eval.index = vax.intro.index + set.months_until_second_knot
+  vax.intro.index = which(ds$date ==set.start.date   )
+  eval.index = vax.intro.index + 0
   
-  form2 <- as.formula(paste0('~',as.character(form1)[3]))
+  form2 <- as.formula(form1a)
   mod.matrix <- model.matrix(form2, data=ds) 
   
   
@@ -28,7 +28,7 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_unt
   }
   
   preds.stage1.regmean <-
-    exp( mod.matrix %*% t(pred.coefs.reg.mean) +logoffset)
+    as.matrix(exp( mod.matrix %*% t(pred.coefs.reg.mean) + logoffset$log_offset))
   
   N.samples.stage2 = 1
   
@@ -74,9 +74,9 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_unt
     geom_line() +
     theme_classic() +
     geom_ribbon(data=rr.q.t, aes(x=date, ymin=lcl, ymax=ucl), alpha=0.1) +
-    ylab('Rate ratio') +
+    ylab('Risk ratio') +
     geom_hline(yintercept=1, lty=2, col='red')+
-    geom_vline(xintercept=as.numeric(set.vax.intro.date), lty=2, col='black')
+    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
   
   
   p.cum_prevented <- cum.post.t.q %>% 
@@ -85,9 +85,9 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_unt
     geom_line() +
     theme_classic() +
     geom_ribbon(data=cum.post.t.q, aes(x=date, ymin=lcl, ymax=ucl), alpha=0.1) +
-    ylab('Deaths averted') +
+    ylab('Cases averted') +
     geom_hline(yintercept=1, lty=2, col='red')+
-    geom_vline(xintercept=as.numeric(set.vax.intro.date), lty=2, col='black')
+    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
   
   
   all.preds <- preds.q %>%
@@ -101,7 +101,7 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_unt
     theme_classic() +
     ylab('Number of cases') +
     ylim(0,NA) +
-    geom_vline(xintercept=as.numeric(set.vax.intro.date), lty=2, col='black')
+    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
   
   agg.pred <- all.preds %>%
     mutate(year=year(date)) %>%
@@ -116,7 +116,7 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=months_unt
     theme_classic() +
     ylab('Number of cases') +
     ylim(0,NA)+
-    geom_vline(xintercept=as.numeric(year(set.vax.intro.date)), lty=2, col='black')
+    geom_vline(xintercept=as.numeric(year(set.start.date)), lty=2, col='black')
   
   rr.out <- list('rr.q.post' = rr.q.post, 
                  'aic1'=AIC(model.output),'outcome'=mod1$y,
