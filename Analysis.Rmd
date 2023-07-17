@@ -1,0 +1,21 @@
+---
+title: "SEER Thyroid"
+author: "Dan Weinberger"
+date: '2023-07-17'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+```
+
+## Read in Data
+
+```{r}
+a1 <- read_excel('./Data/SEERThy.23.6.17SEND.xlsx', sheet='Rates x hist x mo', skip=2)
+```
+
