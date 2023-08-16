@@ -97,7 +97,8 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
     ggplot( aes( x=date, y=median_pred)) +
     geom_ribbon(data=all.preds, aes(x=date, ymin=lcl_pred, ymax=ucl_pred), alpha=0.1) +
     geom_line() +
-    geom_point(data=all.preds, aes(x=date, y=outcome), color='red', alpha=0.3) +
+    geom_point(data=all.preds, aes(x=date, y=outcome), color='red', alpha=0.3, size=1) +
+    geom_line(data=all.preds, aes(x=date, y=outcome), color='red', alpha=0.3) +
     theme_classic() +
     ylab('Number of cases') +
     ylim(0,NA) +
