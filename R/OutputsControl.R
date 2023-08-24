@@ -32,8 +32,14 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
   
   N.samples.stage2 = 1
   
+  if(fitted.mod$model_type=='nb'){
   preds.stage2 <- rnbinom(n = length(preds.stage1.regmean) * N.samples.stage2,
                           size = model.output$theta, mu = preds.stage1.regmean)
+  }else{
+    preds.stage2 <- rpois(n = length(preds.stage1.regmean) * N.samples.stage2,
+                            lambda = preds.stage1.regmean)
+  }
+  
   
   preds.stage2 <- matrix(preds.stage2,
                          nrow = nrow(preds.stage1.regmean),

@@ -22,19 +22,38 @@ source('./R/OutputsControl.R')
 ## Read in Data
 
 ```{r}
-a1 <- read_excel('./CONFIDENTIAL/SEERThy.23.6.17SEND.xlsx', sheet='Rates x hist x mo', skip=2) %>%
+a1 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Rate x hist x mo', skip=2) %>%
   mutate( date = as.Date(paste(Year, Month, '01', sep='-'), '%Y-%B-%d')) %>%
   rename(monthdays = 'd/mo', Outcome=Count) %>%
   dplyr::select( Histology,date, Outcome, Population,monthdays ) %>%
     mutate(log_offset= log(Population/monthdays*30.3)) %>%
   arrange(Histology, date) 
+
+
+#CHECK THIS--WEIRD MISSINGNESS PATTERN
+a2 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Size cat x mo PAP') %>%
+  mutate( date = as.Date(paste(Yr, Mo, '01', sep='-'), '%Y-%B-%d')) %>%
+  rename( Outcome=Count, Population=Pop) %>%
+  mutate( Histology = paste(Hist, `Size Cat`)) %>%
+  dplyr::select( Histology,date, Outcome, Population ) %>%
+    mutate(hist_grp = if_else(Histology %in% c("Papillary <2cm" ), 'Pap_u_2cm',
+                              if_else(Histology %in% c("Papillary 2-4cm","Papillary >4cm" ) ,'Pap_over_2cm','other'  ))) %>%
+    arrange(hist_grp, date) %>%
+  group_by(hist_grp, date) %>%
+  summarize(Outcome=sum(Outcome), Population=mean(Population)) %>%
+   mutate( Population = if_else(date<='2016-03-01',63621556, Population), 
+      monthdays= lubridate::days_in_month(date),
+          log_offset= log(Population/monthdays*30.3) ) %>%
+  ungroup() %>%
+  filter( !is.na(date))
+
 ```
 The six panels in each figure will be: papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (formerly Hurthle cell), medullary and anaplastic.
 
-## Panel A: Papillary {.tabset}
+## Panel A: Papillary <2 cm {.tabset}
 ```{r}
-b1 <- a1 %>%
-  filter(Histology == 'Papillary') %>%
+b1 <- a2 %>%
+  filter(hist_grp == 'Pap_u_2cm') %>%
   arrange(date) %>%
   mutate(index=row_number())
 
@@ -64,6 +83,40 @@ fig2a
 fig3a <- out1$p.cum_prevented
 fig3a
 ```
+## Panel B: Papillary >=2 cm {.tabset}
+```{r}
+b1 <- a2 %>%
+  filter(hist_grp == 'Pap_over_2cm') %>%
+  arrange(date) %>%
+  mutate(index=row_number())
+
+set.start.date =as.Date('2020-03-01')
+
+form1a <- ' ~ index + offset(log_offset)'
+outcome <- 'Outcome_pre '
+form1 <- paste0(outcome, form1a)
+
+mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
+
+out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+```
+
+### RR trend
+```{r}
+out1$p.rr.trend
+```
+### Obs vs expected trend
+```{r}
+fig2b <- out1$p.preds
+fig2b
+```
+### Cumukative prevented trend
+
+```{r}
+fig3b <- out1$p.cum_prevented
+fig3b
+```
+
 
 ## Panel C: Follicular {.tabset}
 ```{r}
@@ -205,7 +258,12 @@ fig3f
 
 
 ```{r, fig.width=7, fig.height=4}
-(fig2a + plot_spacer() + fig2c)/ (fig2d + fig2e + fig2f) +
+(fig2a +fig2b + fig2c)/ (fig2d + fig2e + fig2f) +
+   plot_annotation(tag_levels = 'A')
+```
+
+```{r, fig.width=7, fig.height=4}
+(fig3a +fig3b + fig3c)/ (fig3d + fig3e + fig3f) +
    plot_annotation(tag_levels = 'A')
 ```
 

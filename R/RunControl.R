@@ -10,8 +10,17 @@ RunControl <- function(ds,set.start.date, set.form_cont1){
   
   #acm_noresp_nodiar 
   mod1 <- glm.nb(set.form_cont1, data=ds1)
+  model_type='nb'
   
-  out.list=list(mod1=mod1,'form_its1'=set.form_cont1, 'ds'=ds1)
+  if( 'th.warn' %in% names(mod1) ){
+    mod1 <- glm(set.form_cont1, data=ds1, family='poisson')
+    print('Using Poisson model instead')
+    model_type='pois'
+    
+  }
+  
+  
+  out.list=list(mod1=mod1,'form_its1'=set.form_cont1,   'ds'=ds1, 'model_type'=model_type)
   
   return(out.list)
 }
