@@ -64,7 +64,11 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
   rr.post <-    obs.sum.eval/preds.stage2.regmean.SUM 
   rr.q.post <- quantile(rr.post, probs = c(0.025, 0.5, 0.975))
   
-  prevented.post.t <-    apply(preds.stage2,2, function(x) x -Y   )
+  preds.stage2.post <- preds.stage2[eval.period,]
+  
+  prevented.post.t <-    apply(preds.stage2.post,2, function(x){ Z=c(rep(0,(eval.index-1)) , (x -Y[eval.period])   )
+  return(Z)
+  })
   
   
   #Cumulative cases
@@ -91,14 +95,16 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
     geom_line() +
     theme_classic() +
     geom_ribbon(data=cum.post.t.q, aes(x=date, ymin=lcl, ymax=ucl), alpha=0.1) +
-    ylab('Cases averted') +
+    ylab('Cases not diagnosed') +
     geom_hline(yintercept=1, lty=2, col='red')+
-    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
+    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')+
+    xlim(min=as.Date('2020-02-01'), NA)
   
   
   all.preds <- preds.q %>%
     cbind.data.frame('outcome'=Y)
   
+  #Obs vs expected
   p.preds <- all.preds %>%
     ggplot( aes( x=date, y=median_pred)) +
     geom_ribbon(data=all.preds, aes(x=date, ymin=lcl_pred, ymax=ucl_pred), alpha=0.1) +
@@ -110,6 +116,19 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
     ylim(0,NA) +
     geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
   
+  #logged Obs vs expected
+  p.preds.log <- all.preds %>%
+    ggplot( aes( x=date, y=log(median_pred))) +
+    geom_ribbon(data=all.preds, aes(x=date, ymin=log(lcl_pred), ymax=log(ucl_pred)), alpha=0.1) +
+    geom_line() +
+    geom_point(data=all.preds, aes(x=date, y=log(outcome+0.5)), color='red', alpha=0.3, size=1) +
+    geom_line(data=all.preds, aes(x=date, y=log(outcome+0.5)), color='red', alpha=0.3) +
+    theme_classic() +
+    ylab('Number of cases') +
+    ylim(0,NA) +
+    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')
+
+    
   agg.pred <- all.preds %>%
     mutate(year=year(date)) %>%
     group_by(year) %>%
@@ -130,7 +149,11 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
                  'all.preds'=all.preds, 
                  'rr.q.t'=rr.q.t, 'dates'=ds$date, 'p.rr.trend'=p.rr.trend,
                  'p.preds.agg'=p.preds.agg, 'p.preds'=p.preds, 
-                 'p.cum_prevented'=p.cum_prevented)
+                 'p.cum_prevented'=p.cum_prevented,
+                 'p.preds.log'=p.preds.log,
+                 'cum.post.t.q'=cum.post.t.q,
+                 'cum.post.t.q.last'=as.matrix(cum.post.t.q[nrow(cum.post.t.q),c(1:3)])
+                 )
   
   
   return(rr.out)

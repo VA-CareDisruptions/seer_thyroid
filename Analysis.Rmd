@@ -98,22 +98,22 @@ form1 <- paste0(outcome, form1a)
 
 mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
 
-out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+out2 <-  OutputsControl(fitted.mod=mod1, niter=10000)
 ```
 
 ### RR trend
 ```{r}
-out1$p.rr.trend
+out2$p.rr.trend
 ```
 ### Obs vs expected trend
 ```{r}
-fig2b <- out1$p.preds
+fig2b <- out2$p.preds
 fig2b
 ```
 ### Cumukative prevented trend
 
 ```{r}
-fig3b <- out1$p.cum_prevented
+fig3b <- out2$p.cum_prevented
 fig3b
 ```
 
@@ -133,22 +133,22 @@ form1 <- paste0(outcome, form1a)
 
 mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
 
-out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+out3 <-  OutputsControl(fitted.mod=mod1, niter=10000)
 ```
 
 ### RR trend
 ```{r}
-out1$p.rr.trend
+out3$p.rr.trend
 ```
 ### Obs vs expected trend
 ```{r}
-fig2c <- out1$p.preds
+fig2c <- out3$p.preds
 fig2c
 ```
 ### Cumulative prevented trend
 
 ```{r}
-fig3c <- out1$p.cum_prevented
+fig3c <- out3$p.cum_prevented
 fig3c
 ```
 
@@ -168,22 +168,22 @@ form1 <- paste0(outcome, form1a)
 
 mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
 
-out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+out4 <-  OutputsControl(fitted.mod=mod1, niter=10000)
 ```
 
 ### RR trend
 ```{r}
-out1$p.rr.trend
+out4$p.rr.trend
 ```
 ### Obs vs expected trend
 ```{r}
-fig2d <- out1$p.preds
+fig2d <- out4$p.preds
 fig2d
 ```
 ### Cumulative prevented trend
 
 ```{r}
-fig3d <- out1$p.cum_prevented
+fig3d <- out4$p.cum_prevented
 fig3d
 ```
 
@@ -203,22 +203,22 @@ form1 <- paste0(outcome, form1a)
 
 mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
 
-out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+out5 <-  OutputsControl(fitted.mod=mod1, niter=10000)
 ```
 
 ### RR trend
 ```{r}
-out1$p.rr.trend
+out5$p.rr.trend
 ```
 ### Obs vs expected trend
 ```{r}
-fig2e <- out1$p.preds
+fig2e <- out5$p.preds
 fig2e
 ```
 ### Cumulative prevented trend
 
 ```{r}
-fig3e <- out1$p.cum_prevented
+fig3e <- out5$p.cum_prevented
 fig3e
 ```
 
@@ -237,33 +237,79 @@ form1 <- paste0(outcome, form1a)
 
 mod1 <- RunControl(ds=b1 ,set.start.date=set.start.date, set.form_cont1=form1)
 
-out1 <-  OutputsControl(fitted.mod=mod1, niter=10000)
+out6 <-  OutputsControl(fitted.mod=mod1, niter=10000)
 ```
 
 ### RR trend
 ```{r}
-out1$p.rr.trend
+out6$p.rr.trend
 ```
 ### Obs vs expected trend
 ```{r}
-fig2f <- out1$p.preds
+fig2f <- out6$p.preds
 fig2f
 ```
 ### Cumulative prevented trend
 
 ```{r}
-fig3f <- out1$p.cum_prevented
+fig3f <- out6$p.cum_prevented
 fig3f
 ```
-
+papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (formerly Hurthle cell), medullary and anaplastic.
 
 ```{r, fig.width=7, fig.height=4}
-(fig2a +fig2b + fig2c)/ (fig2d + fig2e + fig2f) +
+(
+  (fig2a + ylim(0,800) +ggtitle('Papillary <2cm'))+
+  (fig2b + ylim(0,800)+ggtitle('Papillary \u2265 2cm'))+
+  (fig2c + ylim(0,150) + ggtitle('Follicular')) 
+  )/ (
+  (fig2d + ylim(0,150)+ ggtitle('Oncocytic (Hurthle cell'))+
+  (fig2e + ylim(0,150)+ ggtitle('Medullary'))+
+  (fig2f + ylim(0,150)+ ggtitle('Anaplastic')) 
+  )+
    plot_annotation(tag_levels = 'A')
+
+```
+log
+```{r, fig.width=7, fig.height=4}
+(
+  (out1$p.preds.log + ylim(1,7) +ggtitle('Papillary <2cm'))+
+  (out2$p.preds.log  + ylim(1,7)+ggtitle('Papillary \u2265 2cm'))+
+  (out3$p.preds.log  + ylim(1,7) + ggtitle('Follicular')) 
+  )/ (
+  (out4$p.preds.log  + ylim(1,7)+ ggtitle('Oncocytic (Hurthle cell'))+
+  (out5$p.preds.log  + ylim(1,7)+ ggtitle('Medullary'))+
+  (out6$p.preds.log  + ylim(1,7)+ ggtitle('Anaplastic')) 
+  )+
+   plot_annotation(tag_levels = 'A')
+
 ```
 
-```{r, fig.width=7, fig.height=4}
-(fig3a +fig3b + fig3c)/ (fig3d + fig3e + fig3f) +
+```{r, fig.width=6, fig.height=4}
+(
+  (fig3a + ylim(-100,1500) +ggtitle('Papillary <2cm'))+
+  (fig3b + ylim(-100,1500)+ggtitle('Papillary \u2265 2cm'))+
+  (fig3c + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Follicular'))  
+  )/ (
+  (fig3d +coord_cartesian(ylim = c(-10, 300))+ ggtitle('Oncocytic'))+
+  (fig3e + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Medullary'))+
+  (fig3f + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Anaplastic')) 
+  )+
    plot_annotation(tag_levels = 'A')
+
+```
+
+```{r}
+all.results <- list(out1,out2, out3, out4, out5, out6)
+
+cbind( c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'rr.q.post')),2))
+
+```
+
+```{r}
+all.results <- list(out1,out2, out3, out4, out5, out6)
+
+cbind.data.frame( 'Type'=c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'cum.post.t.q.last')),-1)  ) 
+
 ```
 
