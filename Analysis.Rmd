@@ -324,16 +324,18 @@ cbind.data.frame( 'Type'=c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'O
 
 hists <- unique(size1$Hist)
 
-fun.size <- function(X){
+for(i in 1:length(hists)){
+    
+print(hists[i])
+    
 ana <- size1 %>%
-  filter(Hist==X)
+  filter(Hist==hists[i])
 
 mod1 <- lm(Size ~ year_cat, data=ana)
 
-summary(mod1)
+print(summary(mod1))
 }
 
-lapply(hists,fun.size)
 
 ```
 
