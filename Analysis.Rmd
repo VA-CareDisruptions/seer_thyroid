@@ -47,6 +47,12 @@ a2 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Size cat x mo
   ungroup() %>%
   filter( !is.na(date))
 
+
+size1 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx',sheet='size_yr') %>%
+  filter(Size <989) %>%
+  mutate(year_cat=as.factor(Yr),
+         Hist = if_else(Hist =='Papiillary', 'Papillary', Hist)) 
+
 ```
 The six panels in each figure will be: papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (formerly Hurthle cell), medullary and anaplastic.
 
@@ -310,6 +316,24 @@ cbind( c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medull
 all.results <- list(out1,out2, out3, out4, out5, out6)
 
 cbind.data.frame( 'Type'=c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'cum.post.t.q.last')),-1)  ) 
+
+```
+
+## Size regression
+```{r}
+
+hists <- unique(size1$Hist)
+
+fun.size <- function(X){
+ana <- size1 %>%
+  filter(Hist==X)
+
+mod1 <- lm(Size ~ year_cat, data=ana)
+
+summary(mod1)
+}
+
+lapply(hists,fun.size)
 
 ```
 
