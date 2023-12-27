@@ -83,7 +83,7 @@ out1$p.rr.trend
 fig2a <- out1$p.preds
 fig2a
 ```
-### Cumukative prevented trend
+### Cumulative prevented trend
 
 ```{r}
 fig3a <- out1$p.cum_prevented
@@ -116,7 +116,7 @@ out2$p.rr.trend
 fig2b <- out2$p.preds
 fig2b
 ```
-### Cumukative prevented trend
+### Cumulative prevented trend
 
 ```{r}
 fig3b <- out2$p.cum_prevented
