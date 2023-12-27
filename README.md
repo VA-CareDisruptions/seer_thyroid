@@ -1,7 +1,8 @@
-Code to accompany: 
-Thyroid Cancer Incidence and Cancer Size at Diagnosis During the First Year of the COVID-19 Pandemic
+## Thyroid Cancer Incidence and Cancer Size at Diagnosis During the First Year of the COVID-19 Pandemic
 
-Authors:
+Code to accompany manuscript.
+
+**Authors** of the manuscript:
 Rebecca Bell, MD1; Manasa Venkatesh2; Sara Fernandes-Taylor, PhD2;
 David O. Francis, MD, MS2; Daniel M. Weinberger, PhD3; Louise Davies, MD, MS4,5
 
@@ -19,4 +20,4 @@ White River Junction, VT 05009
 802-295-9363
 Louise.Davies@Dartmouth.edu
 
-Code written by Dan Weinberger, Associate Professor of Epidemiology, Yale School of Public Health daniel.weinberger at yale dot edu
+*Code written by Dan Weinberger, Associate Professor of Epidemiology, Yale School of Public Health daniel.weinberger at yale dot edu*
