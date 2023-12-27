@@ -12,6 +12,7 @@ RunControl <- function(ds,set.start.date, set.form_cont1){
   mod1 <- glm.nb(set.form_cont1, data=ds1)
   model_type='nb'
   
+  #If unable to fit a negative binomial model, reverts to a Poisson model
   if( 'th.warn' %in% names(mod1) ){
     mod1 <- glm(set.form_cont1, data=ds1, family='poisson')
     print('Using Poisson model instead')

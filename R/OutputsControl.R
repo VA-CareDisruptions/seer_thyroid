@@ -93,11 +93,13 @@ OutputsControl <- function( fitted.mod=mod3,niter=10000, months.start=0, set.mon
     ungroup() %>%
     ggplot( aes( x=date, y=median)) +
     geom_line() +
+    geom_line() +
+    geom_point() +
     theme_classic() +
     geom_ribbon(data=cum.post.t.q, aes(x=date, ymin=lcl, ymax=ucl), alpha=0.1) +
     ylab('Cases not diagnosed') +
     geom_hline(yintercept=1, lty=2, col='red')+
-    geom_vline(xintercept=as.numeric(set.start.date), lty=2, col='black')+
+    geom_vline(xintercept=(as.numeric(set.start.date)-15), lty=2, col='black')+
     xlim(min=as.Date('2020-02-01'), NA)
   
   
