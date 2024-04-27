@@ -22,7 +22,7 @@ source('./R/OutputsControl.R')
 ## Read in Data
 
 ```{r}
-a1 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Rate x hist x mo', skip=2) %>%
+a1 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Rate x hist x mo', skip=1) %>%
   mutate( date = as.Date(paste(Year, Month, '01', sep='-'), '%Y-%B-%d')) %>%
   rename(monthdays = 'd/mo', Outcome=Count) %>%
   dplyr::select( Histology,date, Outcome, Population,monthdays ) %>%
@@ -31,13 +31,13 @@ a1 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Rate x hist x
 
 
 #CHECK THIS--WEIRD MISSINGNESS PATTERN
-a2 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Size cat x mo PAP') %>%
+a2 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Size cat x mo PAP', skip=1) %>%
   mutate( date = as.Date(paste(Yr, Mo, '01', sep='-'), '%Y-%B-%d')) %>%
   rename( Outcome=Count, Population=Pop) %>%
   mutate( Histology = paste(Hist, `Size Cat`)) %>%
   dplyr::select( Histology,date, Outcome, Population ) %>%
     mutate(hist_grp = if_else(Histology %in% c("Papillary <2cm" ), 'Pap_u_2cm',
-                              if_else(Histology %in% c("Papillary 2-4cm","Papillary >4cm" ) ,'Pap_over_2cm','other'  ))) %>%
+                              if_else(Histology %in% c("Papillary >2cm" ) ,'Pap_over_2cm','other'  ))) %>%
     arrange(hist_grp, date) %>%
   group_by(hist_grp, date) %>%
   summarize(Outcome=sum(Outcome), Population=mean(Population)) %>%
@@ -48,7 +48,7 @@ a2 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx', sheet='Size cat x mo
   filter( !is.na(date))
 
 
-size1 <- read_excel('./CONFIDENTIAL/SEERThy.23.8.21SEND.xlsx',sheet='size_yr') %>%
+size1 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx',sheet='Size_Yr') %>%
   filter(Size <989) %>%
   mutate(year_cat=as.factor(Yr),
          Hist = if_else(Hist =='Papiillary', 'Papillary', Hist)) 
@@ -162,7 +162,7 @@ fig3c
 ## Panel D:  Oncocytic (formerly Hurthle cell) {.tabset}
 ```{r}
 b1 <- a1 %>%
-  filter(Histology == 'Hurthle') %>%
+  filter(Histology == 'Oncocytic') %>%
   arrange(date) %>%
   mutate(index=row_number())
 
@@ -295,11 +295,11 @@ log
 (
   (fig3a + ylim(-100,1500) +ggtitle('Papillary <2cm'))+
   (fig3b + ylim(-100,1500)+ggtitle('Papillary \u2265 2cm'))+
-  (fig3c + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Follicular'))  
+  (fig3c + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Follicular'))  
   )/ (
-  (fig3d +coord_cartesian(ylim = c(-10, 300))+ ggtitle('Oncocytic'))+
-  (fig3e + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Medullary'))+
-  (fig3f + coord_cartesian(ylim = c(-10, 300))+ ggtitle('Anaplastic')) 
+  (fig3d +coord_cartesian(ylim = c(-40, 300))+ ggtitle('Oncocytic'))+
+  (fig3e + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Medullary'))+
+  (fig3f + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Anaplastic')) 
   )+
    plot_annotation(tag_levels = 'A')
 
