@@ -22,7 +22,7 @@ source('./R/OutputsControl.R')
 ## Read in Data
 
 ```{r}
-a1 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Rate x hist x mo', skip=1) %>%
+a1 <- read_excel('./CONFIDENTIAL/SEERThy.24.4.27.xlsx', sheet='Rate x hist x mo', skip=1) %>%
   mutate( date = as.Date(paste(Year, Month, '01', sep='-'), '%Y-%B-%d')) %>%
   rename(monthdays = 'd/mo', Outcome=Count) %>%
   dplyr::select( Histology,date, Outcome, Population,monthdays ) %>%
@@ -31,12 +31,12 @@ a1 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Rate x hist x
 
 
 #CHECK THIS--WEIRD MISSINGNESS PATTERN
-a2 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Size cat x mo PAP', skip=1) %>%
+a2 <- read_excel('./CONFIDENTIAL/SEERThy.24.4.27.xlsx', sheet='NEW Size cat x mo PAP', skip=1) %>%
   mutate( date = as.Date(paste(Yr, Mo, '01', sep='-'), '%Y-%B-%d')) %>%
   rename( Outcome=Count, Population=Pop) %>%
   mutate( Histology = paste(Hist, `Size Cat`)) %>%
   dplyr::select( Histology,date, Outcome, Population ) %>%
-    mutate(hist_grp = if_else(Histology %in% c("Papillary <2cm" ), 'Pap_u_2cm',
+    mutate(hist_grp = if_else(Histology %in% c("Papillary </=2cm","Papillary <2cm" ), 'Pap_u_2cm',
                               if_else(Histology %in% c("Papillary >2cm" ) ,'Pap_over_2cm','other'  ))) %>%
     arrange(hist_grp, date) %>%
   group_by(hist_grp, date) %>%
@@ -48,7 +48,7 @@ a2 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx', sheet='Size cat x mo
   filter( !is.na(date))
 
 
-size1 <- read_excel('./CONFIDENTIAL/NEW.SEERThy.24.4.23.xlsx',sheet='Size_Yr') %>%
+size1 <- read_excel('./CONFIDENTIAL/SEERThy.24.4.27.xlsx',sheet='Size_Yr') %>%
   filter(Size <989) %>%
   mutate(year_cat=as.factor(Yr),
          Hist = if_else(Hist =='Papiillary', 'Papillary', Hist)) 
@@ -265,8 +265,8 @@ papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (fo
 
 ```{r, fig.width=7, fig.height=4}
 (
-  (fig2a + ylim(0,800) +ggtitle('Papillary <2cm'))+
-  (fig2b + ylim(0,800)+ggtitle('Papillary \u2265 2cm'))+
+  (fig2a + ylim(0,800) +ggtitle('Papillary \u2264 2cm'))+
+  (fig2b + ylim(0,800)+ggtitle('Papillary >2cm'))+
   (fig2c + ylim(0,150) + ggtitle('Follicular')) 
   )/ (
   (fig2d + ylim(0,150)+ ggtitle('Oncocytic (Hurthle cell'))+
@@ -279,8 +279,8 @@ papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (fo
 log
 ```{r, fig.width=7, fig.height=4}
 (
-  (out1$p.preds.log + ylim(1,7) +ggtitle('Papillary <2cm'))+
-  (out2$p.preds.log  + ylim(1,7)+ggtitle('Papillary \u2265 2cm'))+
+  (out1$p.preds.log + ylim(1,7) +ggtitle('Papillary \u2264 2cm'))+
+  (out2$p.preds.log  + ylim(1,7)+ggtitle('Papillary > 2cm'))+
   (out3$p.preds.log  + ylim(1,7) + ggtitle('Follicular')) 
   )/ (
   (out4$p.preds.log  + ylim(1,7)+ ggtitle('Oncocytic (Hurthle cell'))+
@@ -291,15 +291,15 @@ log
 
 ```
 
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=7, fig.height=4}
 (
-  (fig3a + ylim(-100,1500) +ggtitle('Papillary <2cm'))+
-  (fig3b + ylim(-100,1500)+ggtitle('Papillary \u2265 2cm'))+
-  (fig3c + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Follicular'))  
+  (fig3a + coord_cartesian(ylim=c(-100,1500))+ggtitle('Papillary \u2264 2cm') +theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
+  (fig3b + coord_cartesian(ylim=c(-100,1500))+ggtitle('Papillary > 2cm') +theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
+  (fig3c + coord_cartesian(ylim = c(-100, 300))+ ggtitle('Follicular')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))  
   )/ (
-  (fig3d +coord_cartesian(ylim = c(-40, 300))+ ggtitle('Oncocytic'))+
-  (fig3e + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Medullary'))+
-  (fig3f + coord_cartesian(ylim = c(-40, 300))+ ggtitle('Anaplastic')) 
+  (fig3d +coord_cartesian(ylim = c(-100, 300))+ ggtitle('Oncocytic')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
+  (fig3e + coord_cartesian(ylim = c(-100, 300))+ ggtitle('Medullary')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
+  (fig3f + coord_cartesian(ylim = c(-100, 300))+ ggtitle('Anaplastic')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))) 
   )+
    plot_annotation(tag_levels = 'A')
 
@@ -308,14 +308,14 @@ log
 ```{r}
 all.results <- list(out1,out2, out3, out4, out5, out6)
 
-cbind( c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'rr.q.post')),2))
+cbind( c('Papillary <=2cm', 'Papillary >2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'rr.q.post')),2))
 
 ```
 
 ```{r}
 all.results <- list(out1,out2, out3, out4, out5, out6)
 
-cbind.data.frame( 'Type'=c('Papillary <2cm', 'Papillary >=2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'cum.post.t.q.last')),-1)  ) 
+cbind.data.frame( 'Type'=c('Papillary <=2cm', 'Papillary >2cm', 'Follicular', 'Oncocytic', 'Medullary', 'Anaplastic') , round(t(sapply(all.results, '[[', 'cum.post.t.q.last')),-1)  ) 
 
 ```
 
