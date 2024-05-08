@@ -333,8 +333,14 @@ ana <- size1 %>%
 
 mod1 <- lm(Size ~ year_cat, data=ana)
 
+p <- ggplot(ana, aes(x=year_cat, y=log(Size))) + 
+  geom_violin()+
+  ggtitle(hists[i])+
+  theme_classic()
+print(p)
 print(summary(mod1))
 }
+
 
 
 ```
