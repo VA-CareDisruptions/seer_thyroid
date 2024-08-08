@@ -13,7 +13,7 @@ library(lubridate)
 library(MASS)
 library(ggplot2)
 library(patchwork) # combining plots
-
+library(svglite)
 source('./R/RunControl.R')
 source('./R/OutputsControl.R')
 
@@ -264,7 +264,7 @@ fig3f
 papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (formerly Hurthle cell), medullary and anaplastic.
 
 ```{r, fig.width=7, fig.height=4}
-(
+fig2 <- (
   (fig2a + ylim(0,800) +ggtitle('Papillary \u2264 2cm'))+
   (fig2b + ylim(0,800)+ggtitle('Papillary >2cm'))+
   (fig2c + ylim(0,150) + ggtitle('Follicular')) 
@@ -275,7 +275,12 @@ papillary cancers 2cm or less, papillary cancers >2cm, follicular, Oncocytic (fo
   )+
    plot_annotation(tag_levels = 'A')
 
+fig2
+
+    ggsave(file="./plots/fig2.eps", plot=fig2, width=10, height=6, device="eps")
+
 ```
+
 log
 ```{r, fig.width=7, fig.height=4}
 (
@@ -292,7 +297,7 @@ log
 ```
 
 ```{r, fig.width=7, fig.height=4}
-(
+fig3 <- (
   (fig3a + coord_cartesian(ylim=c(-100,1500))+ggtitle('Papillary \u2264 2cm') +theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
   (fig3b + coord_cartesian(ylim=c(-100,1500))+ggtitle('Papillary > 2cm') +theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))+
   (fig3c + coord_cartesian(ylim = c(-100, 300))+ ggtitle('Follicular')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)))  
@@ -302,6 +307,9 @@ log
   (fig3f + coord_cartesian(ylim = c(-100, 300))+ ggtitle('Anaplastic')+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))) 
   )+
    plot_annotation(tag_levels = 'A')
+
+
+    ggsave(file="./plots/fig3.eps", plot=fig3, width=10, height=6, device="eps")
 
 ```
 
